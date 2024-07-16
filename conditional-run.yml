@@ -1,0 +1,65 @@
+name: $(Date:yyyyMMdd)-$(SourceBranchName)-$(Rev:rr)
+
+parameters:
+  - name: Environment
+    displayName: On which environment do you want to run?
+    type: string
+    default: 'Dev'
+    values:
+    - 'Dev'
+    - 'Prod'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+trigger: none
+
+variables:
+    isScheduledRun: $[eq(variables['Build.Reason'], 'Schedule')]
+
+
+stages:
+  - stage: UnconditionalStage
+    displayName: Unconditional Run (Stage)
+    jobs:
+      - job: UnconditionalJob
+        displayName: Unconditional Run (Job)
+        steps:
+          - task: AzurePowerShell@5
+            displayName: Logging some stuff
+            inputs:
+              azureSubscription: "P1-NonProd-Mngmnt"
+              ScriptType: 'InlineScript'
+              Inline: |
+                Write-Host "I just did a thing!"
+              azurePowerShellVersion: 'LatestVersion'
+  - stage: ConditionalStage
+    displayName: Conditional Run (Stage)
+    jobs:
+      - job: ConditionalJob
+        condition: or(eq('${{ parameters.Environment }}', 'Prod'), eq('${{ eq(variables['Build.Reason'], 'Schedule') }}', 'true'))
+        displayName: Conditional Run (Job)
+        steps:
+          - task: AzurePowerShell@5
+            displayName: Logging some stuff
+            inputs:
+              azureSubscription: "P1-NonProd-Mngmnt"
+              ScriptType: 'InlineScript'
+              Inline: |
+                Write-Host "I just did a thing!"
+              azurePowerShellVersion: 'LatestVersion'
+  - ${{ if or(eq(parameters.Environment, 'Prod'), eq(variables['Build.Reason'], 'Schedule')) }}:
+    - stage: IfStatementStage
+      displayName: Conditional Run - If statement (Stage)
+      jobs:
+        - job: IfStatementJob
+          displayName: Conditional Run - If statement (Job)
+          steps:
+            - task: AzurePowerShell@5
+              displayName: Logging some stuff
+              inputs:
+                azureSubscription: "P1-NonProd-Mngmnt"
+                ScriptType: 'InlineScript'
+                Inline: |
+                  Write-Host "I just did a thing!"
+                azurePowerShellVersion: 'LatestVersion'

@@ -1,0 +1,29 @@
+# Created 16-07-2024 by Thijs Kosterman
+# Last Updated: 16-07-2024
+
+name: $(Date:yyyyMMdd)-$(SourceBranchName)-$(Rev:rr)
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+trigger: none
+
+variables:
+  items: 'itemA,itemB'
+
+stages:
+- stage: LoopStage
+  displayName: Process all Items (Stage)
+  jobs:
+    - job: LoopJob
+      displayName: Process all Items (Job)
+      steps:
+        - ${{ each item in split(variables.items, ',')}}:
+          - task: AzurePowerShell@5
+            displayName: Process ${{ item }}
+            inputs:
+              azureSubscription: # Service Connection
+              ScriptType: 'InlineScript'
+              Inline: |
+                Write-Host "Processing ${{ item }}"
+              azurePowerShellVersion: 'LatestVersion'
