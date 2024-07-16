@@ -28,7 +28,7 @@ stages:
           - task: AzurePowerShell@5
             displayName: Logging some stuff
             inputs:
-              azureSubscription: "P1-NonProd-Mngmnt"
+              azureSubscription: # Service Connection
               ScriptType: 'InlineScript'
               Inline: |
                 Write-Host "I just did a thing!"
@@ -43,7 +43,7 @@ stages:
           - task: AzurePowerShell@5
             displayName: Logging some stuff
             inputs:
-              azureSubscription: "P1-NonProd-Mngmnt"
+              azureSubscription: # Service Connection
               ScriptType: 'InlineScript'
               Inline: |
                 Write-Host "I just did a thing!"
@@ -58,7 +58,7 @@ stages:
             - task: AzurePowerShell@5
               displayName: Logging some stuff
               inputs:
-                azureSubscription: "P1-NonProd-Mngmnt"
+                azureSubscription: # Service Connection
                 ScriptType: 'InlineScript'
                 Inline: |
                   Write-Host "I just did a thing!"
